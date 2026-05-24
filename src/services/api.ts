@@ -3,7 +3,7 @@ export const streamChat = async (
   sessionId: string,
   onChunk: (chunk: string) => void
 ) => {
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://ulmind-ask-ai-backend.onrender.com';
   
   try {
     const response = await fetch(`${API_URL}/api/v1/chat/stream`, {
