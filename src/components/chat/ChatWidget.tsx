@@ -30,7 +30,14 @@ export function ChatWidget() {
       <motion.button
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          if (isOpen) {
+            setIsOpen(false);
+            window.parent.postMessage({ type: 'CLOSE_ASK_AI' }, '*');
+          } else {
+            setIsOpen(true);
+          }
+        }}
         className={cn(
           "flex items-center justify-center w-14 h-14 rounded-full shadow-2xl text-white transition-colors duration-300",
           isOpen ? "bg-zinc-800 hover:bg-zinc-700" : "bg-rose-600 hover:bg-rose-700"
