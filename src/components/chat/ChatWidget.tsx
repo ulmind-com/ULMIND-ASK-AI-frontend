@@ -6,8 +6,24 @@ import { useChatStore } from '@/store/useChatStore';
 import { ChatWindow } from './ChatWindow';
 import { cn } from '@/lib/utils';
 
+import { useEffect } from 'react';
+
 export function ChatWidget() {
   const { isOpen, setIsOpen } = useChatStore();
+
+  useEffect(() => {
+    // Tell parent to resize the iframe dynamically based on open state
+    // This allows the iframe to not block background clicks when closed
+    if (isOpen) {
+      window.parent.postMessage({ type: 'ASK_AI_RESIZE', state: 'open' }, '*');
+    } else {
+      // Wait for exit animation to finish before shrinking iframe
+      const timer = setTimeout(() => {
+        window.parent.postMessage({ type: 'ASK_AI_RESIZE', state: 'closed' }, '*');
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
@@ -30,14 +46,7 @@ export function ChatWidget() {
       <motion.button
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        onClick={() => {
-          if (isOpen) {
-            setIsOpen(false);
-            window.parent.postMessage({ type: 'CLOSE_ASK_AI' }, '*');
-          } else {
-            setIsOpen(true);
-          }
-        }}
+        onClick={() => setIsOpen(!isOpen)}
         className={cn(
           "flex items-center justify-center w-14 h-14 rounded-full shadow-2xl text-white transition-colors duration-300",
           isOpen ? "bg-zinc-800 hover:bg-zinc-700" : "bg-rose-600 hover:bg-rose-700"
